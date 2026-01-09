@@ -1,12 +1,37 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { HeroSection } from "@/components/home/HeroSection";
+import { FeaturedGames } from "@/components/home/FeaturedGames";
+import { GameCategories } from "@/components/home/GameCategories";
+import { PromoBannerGrid, PromoBanner } from "@/components/home/PromoBanner";
+import { AllGameCategories } from "@/components/home/GamesList";
+import { GameProviders } from "@/components/home/GameProviders";
+import { ComingSoon } from "@/components/home/ComingSoon";
+import { Testimonials } from "@/components/home/Testimonials";
 
 const Index = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-background">
+      <Header />
+      
+      <main>
+        <HeroSection />
+        <FeaturedGames />
+        <PromoBannerGrid />
+        <GameCategories />
+        <AllGameCategories />
+        <div className="container mx-auto px-4 py-8">
+          <PromoBanner variant="tournament" />
+        </div>
+        <GameProviders />
+        <ComingSoon />
+        <Testimonials />
+        <div className="container mx-auto px-4 py-8">
+          <PromoBanner variant="cashback" />
+        </div>
+      </main>
+
+      <Footer />
     </div>
   );
 };
