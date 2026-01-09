@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { MobileNav } from "@/components/layout/MobileNav";
+import { WhatsAppButton, whatsAppLinks } from "@/components/layout/WhatsAppButton";
 import { Button } from "@/components/ui/button";
 import { 
   Wallet, 
@@ -18,7 +20,9 @@ import {
   ChevronRight,
   Plus,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  MessageCircle,
+  Zap
 } from "lucide-react";
 
 const recentGames = [
@@ -54,10 +58,10 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-16 md:pb-0">
       <Header />
       
-      <main className="pt-28 pb-16">
+      <main className="pt-28 pb-20 md:pb-16">
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Sidebar */}
@@ -285,6 +289,8 @@ export default function Dashboard() {
       </main>
 
       <Footer />
+      <MobileNav />
+      <WhatsAppButton />
     </div>
   );
 }

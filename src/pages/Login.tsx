@@ -1,12 +1,14 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Gamepad2, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Gamepad2, Mail, Lock, Eye, EyeOff, ArrowRight, MessageCircle, Zap } from "lucide-react";
+import { whatsAppLinks } from "@/components/layout/WhatsAppButton";
 
 export default function Login() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -14,8 +16,9 @@ export default function Login() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login
-    console.log({ email, password, rememberMe });
+    // Handle login - redirect to dashboard after login
+    // In real app, this would check credentials first
+    navigate("/dashboard");
   };
 
   return (
@@ -126,6 +129,18 @@ export default function Login() {
               </svg>
               Facebook
             </Button>
+          </div>
+
+          {/* Instant Login via WhatsApp */}
+          <div className="mt-6 p-4 bg-[#25D366]/10 rounded-xl border border-[#25D366]/30">
+            <p className="text-sm text-center mb-3 font-medium">Quick Login via WhatsApp</p>
+            <a href={whatsAppLinks.login} target="_blank" rel="noopener noreferrer">
+              <Button variant="outline" className="w-full gap-2 border-[#25D366] hover:bg-[#25D366]/20">
+                <MessageCircle className="w-5 h-5 text-[#25D366]" />
+                Instant Login
+                <Zap className="w-4 h-4 text-accent" />
+              </Button>
+            </a>
           </div>
 
           {/* Sign Up Link */}

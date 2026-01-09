@@ -2,6 +2,9 @@ import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { MobileNav } from "@/components/layout/MobileNav";
+import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
+import { AddFundsModal } from "@/components/modals/AddFundsModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -18,8 +21,10 @@ import {
   Shield,
   Clock,
   Gift,
-  Phone
+  Phone,
+  Zap
 } from "lucide-react";
+import { whatsAppLinks } from "@/components/layout/WhatsAppButton";
 
 const gameData: Record<string, any> = {
   "aviator": {
@@ -68,6 +73,8 @@ export default function GameDetail() {
   const { id } = useParams();
   const [betAmount, setBetAmount] = useState(100);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showAddFunds, setShowAddFunds] = useState(false);
+  const walletBalance = 0; // In real app, this would come from state/context
 
   const game = gameData[id || "aviator"] || gameData["aviator"];
 
@@ -75,6 +82,14 @@ export default function GameDetail() {
 
   const handleBetChange = (value: number) => {
     setBetAmount(Math.max(game.minBet, Math.min(game.maxBet, value)));
+  };
+
+  const handleStartPlaying = () => {
+    if (walletBalance < betAmount) {
+      setShowAddFunds(true);
+      return;
+    }
+    setIsPlaying(true);
   };
 
   return (
@@ -272,7 +287,12 @@ export default function GameDetail() {
                   </div>
                 </div>
 
-                <Button variant="neon" size="xl" className="w-full mt-6 gap-2">
+                <Button 
+                  variant="neon" 
+                  size="xl" 
+                  className="w-full mt-6 gap-2"
+                  onClick={handleStartPlaying}
+                >
                   <Play className="w-5 h-5" />
                   Start Playing
                 </Button>
@@ -290,13 +310,29 @@ export default function GameDetail() {
                   </div>
                 </Link>
                 
-                <a href="https://wa.me/918000825980" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors">
-                  <div className="w-10 h-10 rounded-lg bg-neon-green/20 flex items-center justify-center">
-                    <MessageCircle className="w-5 h-5 text-neon-green" />
+                <a href={whatsAppLinks.deposit} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors border border-[#25D366]/30">
+                  <div className="w-10 h-10 rounded-lg bg-[#25D366]/20 flex items-center justify-center">
+                    <MessageCircle className="w-5 h-5 text-[#25D366]" />
                   </div>
-                  <div>
-                    <p className="font-medium">WhatsApp Support</p>
-                    <p className="text-xs text-muted-foreground">Chat with us</p>
+                  <div className="flex-1">
+                    <p className="font-medium flex items-center gap-2">
+                      Instant Deposit
+                      <Zap className="w-4 h-4 text-accent" />
+                    </p>
+                    <p className="text-xs text-muted-foreground">Via WhatsApp</p>
+                  </div>
+                </a>
+
+                <a href={whatsAppLinks.withdraw} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors">
+                  <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
+                    <Wallet className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium flex items-center gap-2">
+                      Instant Withdraw
+                      <Zap className="w-4 h-4 text-accent" />
+                    </p>
+                    <p className="text-xs text-muted-foreground">Via WhatsApp</p>
                   </div>
                 </a>
 
@@ -338,6 +374,9 @@ export default function GameDetail() {
       </main>
 
       <Footer />
+      <MobileNav />
+      <WhatsAppButton />
+      <AddFundsModal open={showAddFunds} onOpenChange={setShowAddFunds} />
     </div>
   );
 }

@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { MobileNav } from "@/components/layout/MobileNav";
+import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { GameCard } from "@/components/games/GameCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -78,10 +80,10 @@ export default function Games() {
   });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-16 md:pb-0">
       <Header />
       
-      <main className="pt-32 pb-16">
+      <main className="pt-32 pb-20 md:pb-16">
         <div className="container mx-auto px-4">
           {/* Page Header */}
           <div className="mb-8">
@@ -205,6 +207,8 @@ export default function Games() {
       </main>
 
       <Footer />
+      <MobileNav />
+      <WhatsAppButton />
     </div>
   );
 }
