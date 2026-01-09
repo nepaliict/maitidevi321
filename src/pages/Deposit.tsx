@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { MobileNav } from "@/components/layout/MobileNav";
+import { WhatsAppButton, whatsAppLinks } from "@/components/layout/WhatsAppButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,7 +19,9 @@ import {
   ChevronRight,
   Plus,
   Check,
-  AlertCircle
+  AlertCircle,
+  MessageCircle,
+  Zap
 } from "lucide-react";
 
 const paymentMethods = [
@@ -49,10 +53,10 @@ export default function Deposit() {
   const bonus = amount >= 500 ? Math.floor(amount * 0.1) : 0;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-16 md:pb-0">
       <Header />
       
-      <main className="pt-28 pb-16">
+      <main className="pt-28 pb-20 md:pb-16">
         <div className="container mx-auto px-4 max-w-4xl">
           {/* Header */}
           <div className="text-center mb-8">
@@ -226,6 +230,18 @@ export default function Deposit() {
                 {bonus > 0 && <span className="text-xs">+₹{bonus} bonus</span>}
                 <ChevronRight className="w-5 h-5" />
               </Button>
+
+              {/* Instant Deposit via WhatsApp */}
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground mb-2">Or for instant processing</p>
+                <a href={whatsAppLinks.deposit} target="_blank" rel="noopener noreferrer">
+                  <Button variant="outline" size="lg" className="w-full gap-2 border-[#25D366] hover:bg-[#25D366]/10">
+                    <MessageCircle className="w-5 h-5 text-[#25D366]" />
+                    Instant Deposit via WhatsApp
+                    <Zap className="w-4 h-4 text-accent" />
+                  </Button>
+                </a>
+              </div>
             </div>
 
             {/* Sidebar */}
@@ -299,6 +315,8 @@ export default function Deposit() {
       </main>
 
       <Footer />
+      <MobileNav />
+      <WhatsAppButton message="Hi! I want to deposit funds to my KarnaliX account." />
     </div>
   );
 }

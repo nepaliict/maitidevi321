@@ -1,5 +1,7 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { MobileNav } from "@/components/layout/MobileNav";
+import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { HeroSection } from "@/components/home/HeroSection";
 import { FeaturedGames } from "@/components/home/FeaturedGames";
 import { GameCategories } from "@/components/home/GameCategories";
@@ -11,7 +13,7 @@ import { Testimonials } from "@/components/home/Testimonials";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-16 md:pb-0">
       <Header />
       
       <main>
@@ -32,6 +34,8 @@ const Index = () => {
       </main>
 
       <Footer />
+      <MobileNav />
+      <WhatsAppButton />
     </div>
   );
 };
