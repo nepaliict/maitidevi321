@@ -29,11 +29,11 @@ import {
 } from "lucide-react";
 
 const paymentMethods = [
-  { id: "esewa", name: "eSewa", icon: "💳", popular: true, minLimit: 500, maxLimit: 25000 },
-  { id: "khalti", name: "Khalti", icon: "📱", popular: true, minLimit: 100, maxLimit: 50000 },
-  { id: "bank", name: "Bank Transfer", icon: "🏦", minLimit: 1000, maxLimit: 100000 },
-  { id: "upi", name: "UPI", icon: "📲", minLimit: 100, maxLimit: 100000 },
-  { id: "card", name: "Credit/Debit Card", icon: "💳", minLimit: 500, maxLimit: 100000 },
+  { id: "esewa", name: "eSewa", icon: "💳", popular: true, minLimit: 500, maxLimit: 25000, hasQR: true },
+  { id: "khalti", name: "Khalti", icon: "📱", popular: true, minLimit: 100, maxLimit: 50000, hasQR: true },
+  { id: "qrcode", name: "Bank QR Code", icon: "📷", popular: false, minLimit: 500, maxLimit: 100000, hasQR: true },
+  { id: "bank", name: "Bank Transfer", icon: "🏦", minLimit: 1000, maxLimit: 100000, hasQR: false },
+  { id: "upi", name: "UPI", icon: "📲", minLimit: 100, maxLimit: 100000, hasQR: false },
 ];
 
 const quickAmounts = [500, 1000, 2000, 5000, 10000, 25000];
@@ -46,11 +46,12 @@ const recentTransactions = [
 ];
 
 export default function Deposit() {
-  const [selectedMethod, setSelectedMethod] = useState("esewa");
+  const [selectedMethod, setSelectedMethod] = useState("");
   const [amount, setAmount] = useState(1000);
   const [step, setStep] = useState(1);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [uploadedPreview, setUploadedPreview] = useState<string | null>(null);
+  const [transactionCode, setTransactionCode] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const currentMethod = paymentMethods.find(m => m.id === selectedMethod);
@@ -174,8 +175,8 @@ export default function Deposit() {
                 </div>
               </div>
 
-              {/* Step 2: Payment Method */}
-              <div className="glass rounded-xl p-6">
+              {/* Step 2: Payment Method - Dropdown */}
+              <div className="glass rounded-xl p-4 sm:p-6">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-sm font-bold text-primary-foreground">
                     2
@@ -183,67 +184,82 @@ export default function Deposit() {
                   <h2 className="text-lg font-semibold">Select Payment Method</h2>
                 </div>
 
-                <div className="grid sm:grid-cols-2 gap-3">
+                <select
+                  value={selectedMethod}
+                  onChange={(e) => setSelectedMethod(e.target.value)}
+                  className="w-full h-12 px-4 rounded-xl bg-muted border border-border text-base font-medium focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+                >
+                  <option value="">-- Choose Payment Method --</option>
                   {paymentMethods.map((method) => (
-                    <button
-                      key={method.id}
-                      onClick={() => setSelectedMethod(method.id)}
-                      className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
-                        selectedMethod === method.id
-                          ? "border-primary bg-primary/10"
-                          : "border-border hover:border-primary/50"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl">{method.icon}</span>
-                        <div className="text-left">
-                          <p className="font-medium">{method.name}</p>
-                          <div className="flex items-center gap-2">
-                            {method.popular && (
-                              <span className="text-xs text-neon-green">Popular</span>
-                            )}
-                            <span className="text-xs text-muted-foreground">
-                              ₹{method.minLimit.toLocaleString()}-₹{method.maxLimit.toLocaleString()}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      {selectedMethod === method.id && (
-                        <Check className="w-5 h-5 text-primary" />
-                      )}
-                    </button>
+                    <option key={method.id} value={method.id}>
+                      {method.icon} {method.name} (₹{method.minLimit.toLocaleString()}-₹{method.maxLimit.toLocaleString()})
+                    </option>
                   ))}
-                </div>
+                </select>
+
+                {selectedMethod && currentMethod && (
+                  <div className="mt-4 p-3 bg-primary/10 rounded-lg border border-primary/30">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">{currentMethod.icon}</span>
+                      <div>
+                        <p className="font-semibold">{currentMethod.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          Limit: ₹{currentMethod.minLimit.toLocaleString()} - ₹{currentMethod.maxLimit.toLocaleString()}
+                        </p>
+                      </div>
+                      <Check className="w-5 h-5 text-primary ml-auto" />
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* Step 3: Payment Details */}
-              {(selectedMethod === "esewa" || selectedMethod === "khalti") && (
+              {/* Step 3: QR Code & Payment Details */}
+              {selectedMethod && currentMethod?.hasQR && (
                 <div className="glass rounded-xl p-4 sm:p-6">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-sm font-bold text-primary-foreground">
                       3
                     </div>
-                    <h2 className="text-lg font-semibold">Scan QR Code</h2>
+                    <h2 className="text-lg font-semibold">Scan QR Code & Pay</h2>
                   </div>
 
                   <div className="text-center">
                     {/* Payment Limit Notice */}
                     <div className="mb-4 p-3 bg-accent/10 rounded-lg border border-accent/30">
                       <p className="text-sm font-medium text-accent">
-                        {selectedMethod === "esewa" ? "eSewa" : "Khalti"} Limit: ₹{currentMethod?.minLimit.toLocaleString()} - ₹{currentMethod?.maxLimit.toLocaleString()}
+                        {currentMethod.name} Limit: ₹{currentMethod.minLimit.toLocaleString()} - ₹{currentMethod.maxLimit.toLocaleString()}
                       </p>
                     </div>
                     
-                    {/* Placeholder QR Code */}
+                    {/* QR Code */}
                     <div className="w-40 h-40 sm:w-48 sm:h-48 mx-auto bg-white rounded-xl p-4 mb-4">
                       <div className="w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMSAyMSI+PHBhdGggZD0iTTEgMWg3djdIMXptMiAyaDN2M0gzem0xMi0yaDd2N2gtN3ptMiAyaDN2M2gtM3pNMSAxM2g3djdIMXptMiAyaDN2M0gzem0xMC0yaDJ2MmgtMnptMiAwaDJ2MmgtMnptMi0yaDJ2MmgtMnptMCAyaDJ2MmgtMnptMCAyaDJ2MmgtMnptLTQgMGgydjJoLTJ6bTIgMGgydjJoLTJ6bS00IDJoMnYyaC0yem0yIDBoMnYyaC0yem0yIDBoMnYyaC0yem0tMiAyaDJ2MmgtMnptMiAwaDJ2MmgtMnoiIGZpbGw9IiMwMDAiLz48L3N2Zz4=')] bg-contain bg-center bg-no-repeat" />
                     </div>
                     <p className="text-muted-foreground mb-2">
-                      Scan with {selectedMethod === "esewa" ? "eSewa" : "Khalti"} app to pay
+                      Scan with {currentMethod.name} app to pay ₹{amount.toLocaleString()}
                     </p>
                     <div className="flex items-center justify-center gap-2 text-sm mb-6">
                       <Clock className="w-4 h-4 text-muted-foreground" />
                       <span className="text-muted-foreground">QR expires in 10:00</span>
+                    </div>
+                  </div>
+
+                  {/* Transaction Code Input */}
+                  <div className="border-t border-border pt-6 mb-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="transactionCode" className="text-sm font-medium">
+                        Transaction Code / Reference ID
+                      </Label>
+                      <Input
+                        id="transactionCode"
+                        placeholder="Enter transaction code from payment app"
+                        value={transactionCode}
+                        onChange={(e) => setTransactionCode(e.target.value)}
+                        className="font-mono"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Enter the transaction ID shown after completing payment
+                      </p>
                     </div>
                   </div>
 
