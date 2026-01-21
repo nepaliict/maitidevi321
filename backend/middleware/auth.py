@@ -1,7 +1,6 @@
 from fastapi import HTTPException, Security, Depends, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from typing import Optional, List
-from motor.motor_asyncio import AsyncIOMotorDatabase
 from utils.security import decode_token
 from config.settings import settings
 import logging
