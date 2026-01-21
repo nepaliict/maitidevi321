@@ -20,26 +20,30 @@ async def get_system_config(
     current_user: dict = Depends(get_current_user)
 ):
     """Get all system configurations as key-value pairs"""
+    from fastapi.responses import JSONResponse
+    
     try:
         filter_query = {'is_active': True}
         if category:
             filter_query['category'] = category
         
         configs = await db.system_configs.find(filter_query).to_list(1000)
-        logger.info(f"Found {len(configs)} configs")
+        logger.info(f"Found {len(configs)} configs for category={category}")
         
         # Convert to key-value dict
         result = {}
         for config in configs:
-            config.pop('_id', None)  # Remove MongoDB _id
+            config.pop('_id', None)
             result[config['config_key']] = config['config_value']
         
         logger.info(f"Returning {len(result)} config items")
-        return result
+        
+        # Use explicit JSONResponse
+        return JSONResponse(content=result)
     except Exception as e:
         logger.error(f'Get system config error: {str(e)}')
         import traceback
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail='Failed to get configuration')
 
 @router.post('/system', status_code=status.HTTP_201_CREATED)
