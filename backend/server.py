@@ -7,7 +7,7 @@ from pathlib import Path
 from config.database import db, close_database
 
 # Import routes
-from routes import auth, users, wallets, coins, games, bets, deposits, kyc, support, config
+from routes import auth, users, wallets, coins, games, bets, deposits, kyc, support, config, dashboard
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
