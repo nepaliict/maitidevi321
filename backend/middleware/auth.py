@@ -13,7 +13,7 @@ class RoleChecker:
     def __init__(self, allowed_roles: List[str]):
         self.allowed_roles = allowed_roles
     
-    async def __call__(self, credentials: HTTPAuthorizationCredentials = Security(security), db: AsyncIOMotorDatabase = None):
+    async def __call__(self, credentials: HTTPAuthorizationCredentials = Security(security)):
         token = credentials.credentials
         payload = decode_token(token)
         
