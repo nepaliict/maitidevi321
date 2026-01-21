@@ -37,6 +37,7 @@ api_router.include_router(bets.router)
 api_router.include_router(deposits.router)
 api_router.include_router(kyc.router)
 api_router.include_router(support.router)
+api_router.include_router(config.router)
 
 # Include the router in the main app
 app.include_router(api_router)
