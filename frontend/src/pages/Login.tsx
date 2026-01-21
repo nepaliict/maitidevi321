@@ -6,19 +6,38 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Gamepad2, Mail, Lock, Eye, EyeOff, ArrowRight, MessageCircle, Zap } from "lucide-react";
 import { whatsAppLinks } from "@/components/layout/WhatsAppButton";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login - redirect to dashboard after login
-    // In real app, this would check credentials first
-    navigate("/dashboard");
+    setLoading(true);
+    
+    try {
+      await login(email, password);
+      toast.success('Login successful!');
+      
+      // Redirect based on role (check after login completes)
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      if (user.role === 'master_admin') {
+        navigate("/master-admin");
+      } else {
+        navigate("/dashboard");
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
