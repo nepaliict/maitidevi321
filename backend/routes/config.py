@@ -12,6 +12,17 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix='/config', tags=['Configuration'])
 
+# Test endpoint to verify db connection
+@router.get('/test-db')
+async def test_db_connection(current_user: dict = Depends(get_current_user)):
+    """Test database connection"""
+    try:
+        # Test query
+        count = await db.system_configs.count_documents({})
+        return {'status': 'ok', 'config_count': count, 'db_name': db.name}
+    except Exception as e:
+        return {'status': 'error', 'error': str(e)}
+
 # ============= SYSTEM CONFIGURATION =============
 
 @router.get('/system')
