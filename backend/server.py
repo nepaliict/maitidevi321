@@ -5,11 +5,9 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
-from pydantic import BaseModel, Field
-from typing import List
-import uuid
-from datetime import datetime
 
+# Import routes
+from routes import auth, users, wallets, coins
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -17,40 +15,28 @@ load_dotenv(ROOT_DIR / '.env')
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+db = client[os.environ.get('DB_NAME', 'karnalix_db')]
 
 # Create the main app without a prefix
-app = FastAPI()
+app = FastAPI(title='KarnaliX Gaming API Hub', version='1.0.0')
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
-
-# Define Models
-class StatusCheck(BaseModel):
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
-
-class StatusCheckCreate(BaseModel):
-    client_name: str
-
-# Add your routes to the router instead of directly to app
+# Health check endpoint (no prefix)
 @api_router.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "KarnaliX Gaming API Hub", "status": "online", "version": "1.0.0"}
 
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.dict()
-    status_obj = StatusCheck(**status_dict)
-    _ = await db.status_checks.insert_one(status_obj.dict())
-    return status_obj
+@api_router.get("/health")
+async def health_check():
+    return {"status": "healthy", "database": "connected"}
 
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    status_checks = await db.status_checks.find().to_list(1000)
-    return [StatusCheck(**status_check) for status_check in status_checks]
+# Include all route modules
+api_router.include_router(auth.router)
+api_router.include_router(users.router)
+api_router.include_router(wallets.router)
+api_router.include_router(coins.router)
 
 # Include the router in the main app
 app.include_router(api_router)
@@ -70,6 +56,26 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+@app.on_event("startup")
+async def startup_event():
+    logger.info("KarnaliX API Server starting up...")
+    logger.info(f"Database: {os.environ.get('DB_NAME', 'karnalix_db')}")
+    
+    # Create indexes
+    try:
+        await db.users.create_index("email", unique=True)
+        await db.users.create_index("username", unique=True)
+        await db.users.create_index("role")
+        await db.wallets.create_index([("user_id", 1), ("wallet_type", 1)])
+        await db.transactions.create_index("from_user_id")
+        await db.transactions.create_index("to_user_id")
+        await db.transactions.create_index("created_at")
+        logger.info("Database indexes created")
+    except Exception as e:
+        logger.warning(f"Index creation warning: {str(e)}")
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
+    logger.info("KarnaliX API Server shutting down...")
+
