@@ -214,7 +214,7 @@ export default function MasterAdminPanel() {
     day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' 
   });
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
