@@ -36,14 +36,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const token = apiClient.getToken();
       if (!token) {
         setUser(null);
+        localStorage.removeItem('user');
         return;
       }
 
       const userData = await apiClient.getMe();
       setUser(userData);
+      localStorage.setItem('user', JSON.stringify(userData));
     } catch (error) {
       console.error('Failed to refresh user:', error);
       setUser(null);
+      localStorage.removeItem('user');
       apiClient.setToken(null);
     }
   };
