@@ -116,8 +116,8 @@ export default function Login() {
             </div>
 
             {/* Submit Button */}
-            <Button variant="neon" size="xl" className="w-full gap-2">
-              Login <ArrowRight className="w-5 h-5" />
+            <Button type="submit" variant="neon" size="xl" className="w-full gap-2" disabled={loading}>
+              {loading ? 'Logging in...' : 'Login'} <ArrowRight className="w-5 h-5" />
             </Button>
           </form>
 
