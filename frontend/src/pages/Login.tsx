@@ -23,14 +23,13 @@ export default function Login() {
     setLoading(true);
     
     try {
-      const response = await login(email, password);
+      await login(email, password);
       toast.success('Login successful!');
       
-      // Use a small delay to ensure user state is updated
+      // Use a small delay to ensure user state is updated, then check user from context
       setTimeout(() => {
-        // Get user from context after login
-        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-        if (currentUser.role === 'master_admin') {
+        const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+        if (storedUser.role === 'master_admin') {
           navigate("/master-admin");
         } else {
           navigate("/dashboard");
