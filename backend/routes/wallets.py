@@ -11,10 +11,6 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix='/wallets', tags=['Wallet Management'])
 
-async def get_db():
-    from server import db
-    return db
-
 @router.get('/my-balance', response_model=WalletResponse)
 async def get_my_balance(
     current_user: dict = Depends(get_current_user),

@@ -12,10 +12,6 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix='/coins', tags=['Coin Management'])
 
-async def get_db():
-    from server import db
-    return db
-
 class MintCoinsRequest(BaseModel):
     to_user_id: str
     amount: float = Field(gt=0)

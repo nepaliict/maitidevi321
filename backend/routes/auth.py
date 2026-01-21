@@ -19,10 +19,6 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix='/auth', tags=['Authentication'])
 
-async def get_db():
-    from server import db
-    return db
-
 @router.post('/register', response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def register(user_data: UserCreate):
     """Register a new user (public endpoint - creates user account)"""

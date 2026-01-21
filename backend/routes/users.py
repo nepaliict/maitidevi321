@@ -13,10 +13,6 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix='/users', tags=['User Management'])
 
-async def get_db():
-    from server import db
-    return db
-
 def can_manage_user(manager_role: str, target_role: str) -> bool:
     """Check if manager can manage target user based on hierarchy"""
     hierarchy = settings.ROLES_HIERARCHY
