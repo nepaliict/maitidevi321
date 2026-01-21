@@ -1,4 +1,6 @@
-from passlib.context import CryptContext
+import hashlib
+import hmac
+import os
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from typing import Optional
@@ -8,18 +10,36 @@ import io
 import base64
 from config.settings import settings
 
-pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
-
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a password against a hash"""
-    return pwd_context.verify(plain_password, hashed_password)
+    # Use PBKDF2 with SHA256
+    salt = hashed_password[:32]  # First 32 chars are salt
+    stored_hash = hashed_password[32:]
+    
+    new_hash = hashlib.pbkdf2_hmac(
+        'sha256',
+        plain_password.encode('utf-8'),
+        salt.encode('utf-8'),
+        100000
+    ).hex()
+    
+    return hmac.compare_digest(new_hash, stored_hash)
 
 def get_password_hash(password: str) -> str:
     """Hash a password"""
-    # Ensure password is within bcrypt limits (72 bytes)
-    if len(password.encode('utf-8')) > 72:
-        password = password[:72]
-    return pwd_context.hash(password)
+    # Generate random salt
+    salt = base64.b64encode(os.urandom(24)).decode('utf-8')[:32]
+    
+    # Hash password with PBKDF2
+    pwd_hash = hashlib.pbkdf2_hmac(
+        'sha256',
+        password.encode('utf-8'),
+        salt.encode('utf-8'),
+        100000
+    ).hex()
+    
+    # Return salt + hash
+    return salt + pwd_hash
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     """Create JWT access token"""
