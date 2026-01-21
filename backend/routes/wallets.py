@@ -18,7 +18,7 @@ async def get_db():
 @router.get('/my-balance', response_model=WalletResponse)
 async def get_my_balance(
     current_user: dict = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    
 ):
     """Get current user's wallet balance"""
     try:
@@ -51,7 +51,7 @@ async def get_my_balance(
 async def get_user_balance(
     user_id: str,
     current_user: dict = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    
 ):
     """Get user balance (role-based access)"""
     try:

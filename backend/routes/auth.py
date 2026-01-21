@@ -24,7 +24,7 @@ async def get_db():
     return db
 
 @router.post('/register', response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-async def register(user_data: UserCreate, db: AsyncIOMotorDatabase = Depends(get_db)):
+async def register(user_data: UserCreate):
     """Register a new user (public endpoint - creates user account)"""
     try:
         # Check if user exists
@@ -74,7 +74,7 @@ async def register(user_data: UserCreate, db: AsyncIOMotorDatabase = Depends(get
         )
 
 @router.post('/login', response_model=Token)
-async def login(login_data: Login2FARequest, db: AsyncIOMotorDatabase = Depends(get_db)):
+async def login(login_data: Login2FARequest):
     """Login with email and password (with optional 2FA)"""
     try:
         # Find user
@@ -155,7 +155,7 @@ async def logout(current_user: dict = Depends(get_current_user)):
     return {'message': 'Logged out successfully'}
 
 @router.get('/me', response_model=UserResponse)
-async def get_me(current_user: dict = Depends(get_current_user), db: AsyncIOMotorDatabase = Depends(get_db)):
+async def get_me(current_user: dict = Depends(get_current_user)):
     """Get current user profile"""
     try:
         user = await db.users.find_one({'id': current_user['user_id']})
@@ -185,7 +185,7 @@ async def get_me(current_user: dict = Depends(get_current_user), db: AsyncIOMoto
 @router.post('/2fa/setup', response_model=Setup2FAResponse)
 async def setup_2fa(
     current_user: dict = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    
 ):
     """Setup 2FA for admin roles"""
     try:
@@ -235,7 +235,7 @@ async def setup_2fa(
 async def verify_2fa(
     totp_code: str,
     current_user: dict = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    
 ):
     """Verify and enable 2FA"""
     try:
@@ -277,7 +277,7 @@ async def verify_2fa(
 async def disable_2fa(
     password: str,
     current_user: dict = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    
 ):
     """Disable 2FA (requires password confirmation)"""
     try:

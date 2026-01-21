@@ -59,7 +59,7 @@ async def update_wallet_balance(db, user_id: str, wallet_type: str, amount: floa
 async def mint_coins(
     request: MintCoinsRequest,
     current_user: dict = Depends(require_master_admin()),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    
 ):
     """Mint new coins (Master Admin only)"""
     try:
@@ -112,7 +112,7 @@ async def mint_coins(
 async def transfer_coins(
     request: TransferCoinsRequest,
     current_user: dict = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    
 ):
     """Transfer coins (respects hierarchy: Master Admin → Admin → Agent → User)"""
     try:
@@ -209,7 +209,7 @@ async def get_transactions(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
     current_user: dict = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    
 ):
     """Get transaction history (role-based filtering)"""
     try:
@@ -254,7 +254,7 @@ async def get_transactions(
 async def get_transaction(
     transaction_id: str,
     current_user: dict = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    
 ):
     """Get transaction details (role-based access)"""
     try:

@@ -29,7 +29,7 @@ async def list_users(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
     current_user: dict = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    
 ):
     """List users (filtered by role permissions)"""
     try:
@@ -78,7 +78,7 @@ async def list_users(
 async def create_user(
     user_data: UserCreate,
     current_user: dict = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    
 ):
     """Create user (respects hierarchy: Master Admin → Admin → Agent → User)"""
     try:
@@ -141,7 +141,7 @@ async def create_user(
 async def get_user(
     user_id: str,
     current_user: dict = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    
 ):
     """Get user by ID (role-based access)"""
     try:
@@ -190,7 +190,7 @@ async def update_user(
     user_id: str,
     update_data: UserUpdate,
     current_user: dict = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    
 ):
     """Update user (role-based access)"""
     try:
@@ -252,7 +252,7 @@ async def update_user(
 async def suspend_user(
     user_id: str,
     current_user: dict = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    
 ):
     """Suspend/unsuspend user (toggle is_active)"""
     try:
@@ -300,7 +300,7 @@ async def change_user_role(
     user_id: str,
     new_role: str,
     current_user: dict = Depends(require_master_admin()),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    
 ):
     """Change user role (Master Admin only)"""
     try:
