@@ -23,16 +23,19 @@ export default function Login() {
     setLoading(true);
     
     try {
-      await login(email, password);
+      const response = await login(email, password);
       toast.success('Login successful!');
       
-      // Redirect based on role (check after login completes)
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
-      if (user.role === 'master_admin') {
-        navigate("/master-admin");
-      } else {
-        navigate("/dashboard");
-      }
+      // Use a small delay to ensure user state is updated
+      setTimeout(() => {
+        // Get user from context after login
+        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+        if (currentUser.role === 'master_admin') {
+          navigate("/master-admin");
+        } else {
+          navigate("/dashboard");
+        }
+      }, 100);
     } catch (error: any) {
       toast.error(error.message || 'Login failed');
     } finally {
