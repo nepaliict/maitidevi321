@@ -7,8 +7,10 @@ from .bets import router as bets_router
 from .deposits import router as deposits_router
 from .kyc import router as kyc_router
 from .support import router as support_router
+from .config import router as config_router
 
 __all__ = [
     'auth_router', 'users_router', 'wallets_router', 'coins_router',
-    'games_router', 'bets_router', 'deposits_router', 'kyc_router', 'support_router'
+    'games_router', 'bets_router', 'deposits_router', 'kyc_router', 
+    'support_router', 'config_router'
 ]
