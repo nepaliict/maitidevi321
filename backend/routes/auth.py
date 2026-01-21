@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, status
-from motor.motor_asyncio import AsyncIOMotorDatabase
+
 from models.auth import Token, Login2FARequest, Setup2FAResponse, LoginRequest
 from models.user import UserCreate, UserInDB, UserResponse
 from utils.security import (

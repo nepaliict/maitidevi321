@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, status, Query
-from motor.motor_asyncio import AsyncIOMotorDatabase
+
 from models.user import UserCreate, UserUpdate, UserResponse, UserInDB
 from models.wallet import Wallet
 from utils.security import get_password_hash

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, status, Query
-from motor.motor_asyncio import AsyncIOMotorDatabase
+
 from models.wallet import WalletResponse, Transaction, TransactionCreate
 from middleware.auth import get_current_user, require_master_admin
 from config.settings import settings
