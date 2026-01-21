@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends, status, Query
 from config.database import db
-from middleware.auth import get_current_user
+from middleware.auth import get_current_user, require_admin, require_master_admin
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timedelta
 import logging
@@ -8,6 +8,156 @@ import logging
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix='/dashboard', tags=['Dashboard'])
+
+@router.get('/admin-stats')
+async def get_admin_dashboard_stats(
+    current_user: dict = Depends(require_admin())
+):
+    """Get admin dashboard statistics - MASTER ADMIN / ADMIN"""
+    try:
+        # Today's date
+        today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        week_ago = today_start - timedelta(days=7)
+        month_ago = today_start - timedelta(days=30)
+        
+        # User counts by role
+        total_users = await db.users.count_documents({})
+        admins_count = await db.users.count_documents({'role': 'admin'})
+        agents_count = await db.users.count_documents({'role': 'agent'})
+        users_count = await db.users.count_documents({'role': 'user'})
+        active_users = await db.users.count_documents({'is_active': True})
+        new_users_today = await db.users.count_documents({'created_at': {'$gte': today_start}})
+        new_users_week = await db.users.count_documents({'created_at': {'$gte': week_ago}})
+        
+        # Total coin supply (sum of all main wallets)
+        wallets = await db.wallets.find({'wallet_type': 'main_coin'}).to_list(10000)
+        total_coin_supply = sum([w.get('balance', 0) for w in wallets])
+        
+        bonus_wallets = await db.wallets.find({'wallet_type': 'bonus'}).to_list(10000)
+        total_bonus_coins = sum([w.get('balance', 0) for w in bonus_wallets])
+        
+        locked_wallets = await db.wallets.find({'wallet_type': 'locked'}).to_list(10000)
+        total_locked_coins = sum([w.get('balance', 0) for w in locked_wallets])
+        
+        # Mint stats
+        mints = await db.transactions.find({'transaction_type': 'mint'}).to_list(10000)
+        total_minted = sum([m.get('amount', 0) for m in mints])
+        
+        # Bet statistics
+        total_bets = await db.bets.count_documents({})
+        pending_bets = await db.bets.count_documents({'status': 'pending'})
+        won_bets = await db.bets.count_documents({'status': 'won'})
+        lost_bets = await db.bets.count_documents({'status': 'lost'})
+        
+        all_bets = await db.bets.find({}).to_list(100000)
+        total_bet_volume = sum([b.get('amount', 0) for b in all_bets])
+        
+        todays_bets = await db.bets.find({'created_at': {'$gte': today_start}}).to_list(10000)
+        todays_bet_volume = sum([b.get('amount', 0) for b in todays_bets])
+        
+        # Deposit stats
+        total_deposits = await db.deposits.count_documents({})
+        pending_deposits = await db.deposits.count_documents({'status': 'pending'})
+        approved_deposits = await db.deposits.find({'status': 'approved'}).to_list(100000)
+        total_deposit_amount = sum([d.get('amount', 0) for d in approved_deposits])
+        
+        # Withdrawal stats  
+        total_withdrawals = await db.withdrawals.count_documents({})
+        pending_withdrawals = await db.withdrawals.count_documents({'status': 'pending'})
+        approved_withdrawals = await db.withdrawals.find({'status': 'approved'}).to_list(100000)
+        total_withdrawal_amount = sum([w.get('amount', 0) for w in approved_withdrawals])
+        
+        # KYC stats
+        total_kyc = await db.kyc_documents.count_documents({})
+        pending_kyc = await db.kyc_documents.count_documents({'status': 'pending'})
+        approved_kyc = await db.kyc_documents.count_documents({'status': 'approved'})
+        rejected_kyc = await db.kyc_documents.count_documents({'status': 'rejected'})
+        
+        # Support stats
+        total_tickets = await db.tickets.count_documents({})
+        open_tickets = await db.tickets.count_documents({'status': 'open'})
+        in_progress_tickets = await db.tickets.count_documents({'status': 'in_progress'})
+        
+        # Game stats
+        total_games = await db.games.count_documents({})
+        active_games = await db.games.count_documents({'is_active': True})
+        total_providers = await db.game_providers.count_documents({})
+        active_providers = await db.game_providers.count_documents({'is_active': True})
+        
+        # Recent activity
+        recent_transactions = await db.transactions.find({}).sort('created_at', -1).limit(10).to_list(10)
+        recent_bets = await db.bets.find({}).sort('created_at', -1).limit(10).to_list(10)
+        
+        return {
+            'users': {
+                'total': total_users,
+                'admins': admins_count,
+                'agents': agents_count,
+                'users': users_count,
+                'active': active_users,
+                'new_today': new_users_today,
+                'new_this_week': new_users_week
+            },
+            'coins': {
+                'total_supply': total_coin_supply,
+                'bonus_pool': total_bonus_coins,
+                'locked': total_locked_coins,
+                'total_minted': total_minted
+            },
+            'bets': {
+                'total': total_bets,
+                'pending': pending_bets,
+                'won': won_bets,
+                'lost': lost_bets,
+                'total_volume': total_bet_volume,
+                'today_volume': todays_bet_volume
+            },
+            'deposits': {
+                'total': total_deposits,
+                'pending': pending_deposits,
+                'total_amount': total_deposit_amount
+            },
+            'withdrawals': {
+                'total': total_withdrawals,
+                'pending': pending_withdrawals,
+                'total_amount': total_withdrawal_amount
+            },
+            'kyc': {
+                'total': total_kyc,
+                'pending': pending_kyc,
+                'approved': approved_kyc,
+                'rejected': rejected_kyc
+            },
+            'support': {
+                'total': total_tickets,
+                'open': open_tickets,
+                'in_progress': in_progress_tickets
+            },
+            'games': {
+                'total': total_games,
+                'active': active_games,
+                'providers': total_providers,
+                'active_providers': active_providers
+            },
+            'recent_transactions': [{
+                'id': t['id'],
+                'type': t.get('transaction_type'),
+                'amount': t.get('amount'),
+                'from': t.get('from_user_id'),
+                'to': t.get('to_user_id'),
+                'created_at': t.get('created_at')
+            } for t in recent_transactions],
+            'recent_bets': [{
+                'id': b['id'],
+                'user_id': b.get('user_id'),
+                'amount': b.get('amount'),
+                'status': b.get('status'),
+                'created_at': b.get('created_at')
+            } for b in recent_bets]
+        }
+    except Exception as e:
+        logger.error(f'Get admin stats error: {str(e)}')
+        raise HTTPException(status_code=500, detail='Failed to get admin stats')
 
 @router.get('/overview')
 async def get_dashboard_overview(
