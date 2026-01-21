@@ -1,3 +1,4 @@
+from server import db
 from fastapi import APIRouter, HTTPException, Depends, status, Query
 
 from pydantic import BaseModel, Field
