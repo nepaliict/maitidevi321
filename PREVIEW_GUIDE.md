@@ -3,8 +3,8 @@
 ## 🌐 Access URLs
 
 ### Production URLs
-- **Frontend**: https://bet-fintech-pro.preview.emergentagent.com
-- **Backend API**: https://bet-fintech-pro.preview.emergentagent.com/api
+- **Frontend**: https://gaming-portal-129.preview.emergentagent.com
+- **Backend API**: https://gaming-portal-129.preview.emergentagent.com/api
 
 ### Local URLs (for testing)
 - **Frontend**: http://localhost:3000
@@ -33,7 +33,7 @@ This account has:
 ## 🎯 Preview Walkthrough
 
 ### Step 1: Access the Login Page
-1. Navigate to: https://bet-fintech-pro.preview.emergentagent.com/login
+1. Navigate to: https://gaming-portal-129.preview.emergentagent.com/login
 2. You'll see the KarnaliX login interface
 
 ### Step 2: Login as Master Admin
@@ -98,15 +98,15 @@ This account has:
 ### Quick API Test
 ```bash
 # Test health
-curl https://bet-fintech-pro.preview.emergentagent.com/api/health
+curl https://gaming-portal-129.preview.emergentagent.com/api/health
 
 # Login and get token
-curl -X POST https://bet-fintech-pro.preview.emergentagent.com/api/auth/login \
+curl -X POST https://gaming-portal-129.preview.emergentagent.com/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email": "admin@karnalix.com", "password": "Admin123"}'
 
 # Get user profile (replace TOKEN with actual token)
-curl https://bet-fintech-pro.preview.emergentagent.com/api/auth/me \
+curl https://gaming-portal-129.preview.emergentagent.com/api/auth/me \
   -H "Authorization: Bearer TOKEN"
 ```
 
@@ -194,19 +194,19 @@ curl https://bet-fintech-pro.preview.emergentagent.com/api/auth/me \
 ```bash
 # Get all users
 curl -H "Authorization: Bearer YOUR_TOKEN" \
-  https://bet-fintech-pro.preview.emergentagent.com/api/users
+  https://gaming-portal-129.preview.emergentagent.com/api/users
 
 # Get wallet balance
 curl -H "Authorization: Bearer YOUR_TOKEN" \
-  https://bet-fintech-pro.preview.emergentagent.com/api/wallets/my-balance
+  https://gaming-portal-129.preview.emergentagent.com/api/wallets/my-balance
 
 # Get games
 curl -H "Authorization: Bearer YOUR_TOKEN" \
-  https://bet-fintech-pro.preview.emergentagent.com/api/games
+  https://gaming-portal-129.preview.emergentagent.com/api/games
 
 # Get transactions
 curl -H "Authorization: Bearer YOUR_TOKEN" \
-  https://bet-fintech-pro.preview.emergentagent.com/api/coins/transactions
+  https://gaming-portal-129.preview.emergentagent.com/api/coins/transactions
 ```
 
 ---
@@ -322,6 +322,6 @@ All other collections: Empty (ready for data)
 
 **Ready to Test!** 🚀
 
-Start at: https://bet-fintech-pro.preview.emergentagent.com/login
+Start at: https://gaming-portal-129.preview.emergentagent.com/login
 
 Credentials: admin@karnalix.com / Admin123

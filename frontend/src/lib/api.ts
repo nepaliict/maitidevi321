@@ -3,7 +3,7 @@
  * Handles all backend API communication
  */
 
-const API_BASE_URL = import.meta.env.VITE_REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL || 'https://bet-fintech-pro.preview.emergentagent.com';
+const API_BASE_URL = import.meta.env.VITE_REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL || 'https://gaming-portal-129.preview.emergentagent.com';
 
 class ApiClient {
   private baseURL: string;
