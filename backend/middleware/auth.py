@@ -40,7 +40,7 @@ class RoleChecker:
         
         return {'user_id': user_id, 'role': role}
 
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Security(security), db: AsyncIOMotorDatabase = None):
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Security(security)):
     """Get current authenticated user"""
     token = credentials.credentials
     payload = decode_token(token)
