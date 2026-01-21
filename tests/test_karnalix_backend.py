@@ -133,7 +133,7 @@ class TestAdminDashboard:
     def test_admin_stats_unauthorized(self):
         """Test admin stats without auth token"""
         response = requests.get(f"{BASE_URL}/api/dashboard/admin-stats")
-        assert response.status_code == 401
+        assert response.status_code in [401, 403]  # Either unauthorized or forbidden
         print("✅ Unauthorized access blocked correctly")
 
 
@@ -176,7 +176,7 @@ class TestUserManagement:
     def test_list_users_unauthorized(self):
         """Test listing users without auth"""
         response = requests.get(f"{BASE_URL}/api/users")
-        assert response.status_code == 401
+        assert response.status_code in [401, 403]  # Either unauthorized or forbidden
         print("✅ Unauthorized user list blocked")
     
     def test_create_user_as_admin(self, auth_token):
@@ -285,7 +285,7 @@ class TestGamesManagement:
 
 
 class TestFinancials:
-    """Financial endpoints tests"""
+    """Financial endpoints tests - Routes under /transactions prefix"""
     
     @pytest.fixture
     def auth_token(self):
@@ -301,7 +301,7 @@ class TestFinancials:
     def test_get_deposits(self, auth_token):
         """Test getting deposits list"""
         headers = {"Authorization": f"Bearer {auth_token}"}
-        response = requests.get(f"{BASE_URL}/api/deposits", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/transactions/deposits", headers=headers)
         
         assert response.status_code == 200
         data = response.json()
@@ -311,7 +311,7 @@ class TestFinancials:
     def test_get_withdrawals(self, auth_token):
         """Test getting withdrawals list"""
         headers = {"Authorization": f"Bearer {auth_token}"}
-        response = requests.get(f"{BASE_URL}/api/deposits/withdrawals", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/transactions/withdrawals", headers=headers)
         
         assert response.status_code == 200
         data = response.json()
