@@ -285,6 +285,160 @@ class ApiClient {
       method: 'PATCH',
     });
   }
+
+  // ============= ADMIN APIs =============
+  
+  // Dashboard Stats
+  async getAdminDashboardStats() {
+    return this.request('/dashboard/admin-stats');
+  }
+
+  // Game Providers (Master Admin)
+  async getGameProviders() {
+    return this.request('/games/providers');
+  }
+
+  async createGameProvider(data: any) {
+    return this.request('/games/providers', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateGameProvider(providerId: string, data: any) {
+    return this.request(`/games/providers/${providerId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // All Games (Admin view)
+  async getAllGames(params?: any) {
+    const query = new URLSearchParams(params).toString();
+    return this.request(`/games/admin/all${query ? `?${query}` : ''}`);
+  }
+
+  async createGame(data: any) {
+    return this.request('/games/admin/games', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateGame(gameId: string, data: any) {
+    return this.request(`/games/admin/games/${gameId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // KYC Admin
+  async getAllKYC(params?: any) {
+    const query = new URLSearchParams(params).toString();
+    return this.request(`/kyc/pending${query ? `?${query}` : ''}`);
+  }
+
+  // All Bets (Admin)
+  async getAllBets(params?: any) {
+    const query = new URLSearchParams(params).toString();
+    return this.request(`/bets${query ? `?${query}` : ''}`);
+  }
+
+  async settleBet(betId: string, result: 'won' | 'lost', actualWin = 0) {
+    return this.request(`/bets/${betId}/settle`, {
+      method: 'POST',
+      body: JSON.stringify({ result, actual_win: actualWin }),
+    });
+  }
+
+  async cancelBet(betId: string, reason: string) {
+    return this.request(`/bets/${betId}/cancel`, {
+      method: 'POST',
+      body: JSON.stringify({ reason }),
+    });
+  }
+
+  // Change User Role (Master Admin)
+  async changeUserRole(userId: string, newRole: string) {
+    return this.request(`/users/${userId}/change-role?new_role=${newRole}`, {
+      method: 'PATCH',
+    });
+  }
+
+  // System Config
+  async getSystemConfig(category?: string) {
+    return this.request(`/config/system${category ? `?category=${category}` : ''}`);
+  }
+
+  async updateSystemConfig(configKey: string, configValue: any, configType: string, category: string, description?: string) {
+    const params = new URLSearchParams({
+      config_key: configKey,
+      config_value: String(configValue),
+      config_type: configType,
+      category: category,
+    });
+    if (description) params.append('description', description);
+    return this.request(`/config/system?${params.toString()}`, {
+      method: 'POST',
+    });
+  }
+
+  // Payment Methods
+  async getPaymentMethods(params?: any) {
+    const query = new URLSearchParams(params).toString();
+    return this.request(`/config/payment-methods${query ? `?${query}` : ''}`);
+  }
+
+  async createPaymentMethod(data: any) {
+    return this.request('/config/payment-methods', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updatePaymentMethod(methodId: string, data: any) {
+    return this.request(`/config/payment-methods/${methodId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // Bonus Rules
+  async getBonusRules(params?: any) {
+    const query = new URLSearchParams(params).toString();
+    return this.request(`/config/bonus-rules${query ? `?${query}` : ''}`);
+  }
+
+  async createBonusRule(data: any) {
+    return this.request('/config/bonus-rules', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // Banners
+  async getBanners(position?: string) {
+    return this.request(`/config/banners${position ? `?position=${position}` : ''}`);
+  }
+
+  async createBanner(data: any) {
+    return this.request('/config/banners', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // Limits
+  async getLimits(limitType?: string) {
+    return this.request(`/config/limits${limitType ? `?limit_type=${limitType}` : ''}`);
+  }
+
+  async createLimit(data: any) {
+    return this.request('/config/limits', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
 }
 
 export const apiClient = new ApiClient();
