@@ -28,7 +28,11 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  // Initialize from localStorage immediately
+  const [user, setUser] = useState<User | null>(() => {
+    const stored = localStorage.getItem('user');
+    return stored ? JSON.parse(stored) : null;
+  });
   const [loading, setLoading] = useState(true);
 
   const refreshUser = async () => {
@@ -53,7 +57,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     const initAuth = async () => {
-      await refreshUser();
+      // If we have a token but no user, try to refresh
+      const token = apiClient.getToken();
+      if (token) {
+        await refreshUser();
+      }
       setLoading(false);
     };
     initAuth();
