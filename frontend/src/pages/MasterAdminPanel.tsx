@@ -98,7 +98,7 @@ const sidebarItems = [
 ];
 
 export default function MasterAdminPanel() {
-  const { user, logout, isMasterAdmin, isAdmin } = useAuth();
+  const { user, logout, isMasterAdmin, isAdmin, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('dashboard');
   const [loading, setLoading] = useState(true);
@@ -118,12 +118,15 @@ export default function MasterAdminPanel() {
   const [bonusRules, setBonusRules] = useState<any[]>([]);
 
   useEffect(() => {
+    // Wait for auth to load before checking permissions
+    if (authLoading) return;
+    
     if (!isMasterAdmin && !isAdmin) {
-      navigate('/');
+      navigate('/login');
       return;
     }
     loadAllData();
-  }, [isMasterAdmin, isAdmin, navigate]);
+  }, [isMasterAdmin, isAdmin, navigate, authLoading]);
 
   const loadAllData = async () => {
     setLoading(true);
