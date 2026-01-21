@@ -14,7 +14,7 @@ router = APIRouter(prefix='/config', tags=['Configuration'])
 
 # ============= SYSTEM CONFIGURATION =============
 
-@router.get('/system', response_model=Dict[str, Any])
+@router.get('/system')
 async def get_system_config(
     category: Optional[str] = Query(None),
     current_user: dict = Depends(get_current_user)
@@ -30,6 +30,7 @@ async def get_system_config(
         # Convert to key-value dict
         result = {}
         for config in configs:
+            config.pop('_id', None)  # Remove MongoDB _id
             result[config['config_key']] = config['config_value']
         
         return result
