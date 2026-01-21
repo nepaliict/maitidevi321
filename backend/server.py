@@ -7,7 +7,7 @@ from pathlib import Path
 from config.database import db, close_database
 
 # Import routes
-from routes import auth, users, wallets, coins
+from routes import auth, users, wallets, coins, games, bets, deposits, kyc, support
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -32,6 +32,11 @@ api_router.include_router(auth.router)
 api_router.include_router(users.router)
 api_router.include_router(wallets.router)
 api_router.include_router(coins.router)
+api_router.include_router(games.router)
+api_router.include_router(bets.router)
+api_router.include_router(deposits.router)
+api_router.include_router(kyc.router)
+api_router.include_router(support.router)
 
 # Include the router in the main app
 app.include_router(api_router)
@@ -65,6 +70,17 @@ async def startup_event():
         await db.transactions.create_index("from_user_id")
         await db.transactions.create_index("to_user_id")
         await db.transactions.create_index("created_at")
+        await db.game_providers.create_index("name")
+        await db.games.create_index("category")
+        await db.games.create_index("is_active")
+        await db.bets.create_index("user_id")
+        await db.bets.create_index("status")
+        await db.deposits.create_index("user_id")
+        await db.deposits.create_index("status")
+        await db.withdrawals.create_index("user_id")
+        await db.withdrawals.create_index("status")
+        await db.kyc_documents.create_index("user_id")
+        await db.tickets.create_index("user_id")
         logger.info("Database indexes created")
     except Exception as e:
         logger.warning(f"Index creation warning: {str(e)}")
