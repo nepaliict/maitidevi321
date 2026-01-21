@@ -1,4 +1,4 @@
-from server import db
+from config.database import db
 from fastapi import APIRouter, HTTPException, Depends, status
 
 from models.auth import Token, Login2FARequest, Setup2FAResponse, LoginRequest
