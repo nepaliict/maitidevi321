@@ -230,6 +230,7 @@ async def update_user(
         total_balance = sum([w.get('balance', 0) for w in wallets if w.get('wallet_type') == 'main_coin'])
         
         updated_user.pop('hashed_password', None)
+        updated_user.pop('_id', None)
         updated_user.pop('totp_secret', None)
         
         logger.info(f'User updated: {user_id} by {current_user["user_id"]}')

@@ -128,6 +128,7 @@ async def login(login_data: Login2FARequest):
         
         # Remove sensitive data
         user.pop('hashed_password', None)
+            user.pop('_id', None)
         user.pop('totp_secret', None)
         user.pop('_id', None)  # Remove MongoDB ObjectID
         
@@ -169,6 +170,7 @@ async def get_me(current_user: dict = Depends(get_current_user)):
         total_balance = sum([w.get('balance', 0) for w in wallets if w.get('wallet_type') == 'main_coin'])
         
         user.pop('hashed_password', None)
+            user.pop('_id', None)
         user.pop('totp_secret', None)
         
         return UserResponse(**user, wallet_balance=total_balance)
