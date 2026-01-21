@@ -1,21 +1,16 @@
 from fastapi import FastAPI, APIRouter
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
-from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
+from config.database import db, close_database
 
 # Import routes
 from routes import auth, users, wallets, coins
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
-
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ.get('DB_NAME', 'karnalix_db')]
 
 # Create the main app without a prefix
 app = FastAPI(title='KarnaliX Gaming API Hub', version='1.0.0')
@@ -76,6 +71,6 @@ async def startup_event():
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
-    client.close()
+    close_database()
     logger.info("KarnaliX API Server shutting down...")
 
