@@ -27,11 +27,11 @@ class ApiClient {
     return this.token;
   }
 
-  private async request(endpoint: string, options: RequestInit = {}) {
+  async request(endpoint: string, options: RequestInit = {}) {
     const url = `${this.baseURL}/api${endpoint}`;
-    const headers: HeadersInit = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...options.headers,
+      ...(options.headers as Record<string, string>),
     };
 
     if (this.token) {
@@ -163,6 +163,13 @@ class ApiClient {
     });
   }
 
+  async updateGameProvider(providerId: string, data: any) {
+    return this.request(`/games/providers/${providerId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
   // Bets
   async placeBet(betData: any) {
     return this.request('/bets', {
@@ -180,6 +187,13 @@ class ApiClient {
     return this.request(`/bets/${betId}/settle`, {
       method: 'POST',
       body: JSON.stringify({ result, actual_win: actualWin }),
+    });
+  }
+
+  async cancelBet(betId: string, reason: string) {
+    return this.request(`/bets/${betId}/cancel`, {
+      method: 'POST',
+      body: JSON.stringify({ reason }),
     });
   }
 
@@ -246,6 +260,11 @@ class ApiClient {
     return this.request('/kyc/pending');
   }
 
+  async getAllKYC(params?: any) {
+    const query = new URLSearchParams(params).toString();
+    return this.request(`/kyc/pending${query ? `?${query}` : ''}`);
+  }
+
   async approveKYC(kycId: string, reviewNotes?: string) {
     return this.request(`/kyc/${kycId}/approve`, {
       method: 'PATCH',
@@ -288,31 +307,10 @@ class ApiClient {
 
   // ============= ADMIN APIs =============
   
-  // Dashboard Stats
   async getAdminDashboardStats() {
     return this.request('/dashboard/admin-stats');
   }
 
-  // Game Providers (Master Admin)
-  async getGameProviders() {
-    return this.request('/games/providers');
-  }
-
-  async createGameProvider(data: any) {
-    return this.request('/games/providers', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-  }
-
-  async updateGameProvider(providerId: string, data: any) {
-    return this.request(`/games/providers/${providerId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(data),
-    });
-  }
-
-  // All Games (Admin view)
   async getAllGames(params?: any) {
     const query = new URLSearchParams(params).toString();
     return this.request(`/games/admin/all${query ? `?${query}` : ''}`);
@@ -332,40 +330,17 @@ class ApiClient {
     });
   }
 
-  // KYC Admin
-  async getAllKYC(params?: any) {
-    const query = new URLSearchParams(params).toString();
-    return this.request(`/kyc/pending${query ? `?${query}` : ''}`);
-  }
-
-  // All Bets (Admin)
   async getAllBets(params?: any) {
     const query = new URLSearchParams(params).toString();
     return this.request(`/bets${query ? `?${query}` : ''}`);
   }
 
-  async settleBet(betId: string, result: 'won' | 'lost', actualWin = 0) {
-    return this.request(`/bets/${betId}/settle`, {
-      method: 'POST',
-      body: JSON.stringify({ result, actual_win: actualWin }),
-    });
-  }
-
-  async cancelBet(betId: string, reason: string) {
-    return this.request(`/bets/${betId}/cancel`, {
-      method: 'POST',
-      body: JSON.stringify({ reason }),
-    });
-  }
-
-  // Change User Role (Master Admin)
   async changeUserRole(userId: string, newRole: string) {
     return this.request(`/users/${userId}/change-role?new_role=${newRole}`, {
       method: 'PATCH',
     });
   }
 
-  // System Config
   async getSystemConfig(category?: string) {
     return this.request(`/config/system${category ? `?category=${category}` : ''}`);
   }
@@ -383,7 +358,6 @@ class ApiClient {
     });
   }
 
-  // Payment Methods
   async getPaymentMethods(params?: any) {
     const query = new URLSearchParams(params).toString();
     return this.request(`/config/payment-methods${query ? `?${query}` : ''}`);
@@ -403,7 +377,6 @@ class ApiClient {
     });
   }
 
-  // Bonus Rules
   async getBonusRules(params?: any) {
     const query = new URLSearchParams(params).toString();
     return this.request(`/config/bonus-rules${query ? `?${query}` : ''}`);
@@ -416,7 +389,6 @@ class ApiClient {
     });
   }
 
-  // Banners
   async getBanners(position?: string) {
     return this.request(`/config/banners${position ? `?position=${position}` : ''}`);
   }
@@ -428,7 +400,6 @@ class ApiClient {
     });
   }
 
-  // Limits
   async getLimits(limitType?: string) {
     return this.request(`/config/limits${limitType ? `?limit_type=${limitType}` : ''}`);
   }
@@ -436,6 +407,78 @@ class ApiClient {
   async createLimit(data: any) {
     return this.request('/config/limits', {
       method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // Activity Logs
+  async getActivityLogs(params?: any) {
+    const query = new URLSearchParams(params).toString();
+    return this.request(`/activity-logs${query ? `?${query}` : ''}`);
+  }
+
+  // Game Logs
+  async getGameLogs(params?: any) {
+    const query = new URLSearchParams(params).toString();
+    return this.request(`/game-logs${query ? `?${query}` : ''}`);
+  }
+
+  // Messages
+  async getMessages(params?: any) {
+    const query = new URLSearchParams(params).toString();
+    return this.request(`/messages${query ? `?${query}` : ''}`);
+  }
+
+  async sendMessage(data: any) {
+    return this.request('/messages', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // Super Settings
+  async getSuperSettings() {
+    return this.request('/config/super-settings');
+  }
+
+  async updateSuperSettings(data: any) {
+    return this.request('/config/super-settings', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // Settlement
+  async settleUser(userId: string, pin: string) {
+    return this.request(`/users/${userId}/settle`, {
+      method: 'POST',
+      body: JSON.stringify({ pin }),
+    });
+  }
+
+  // Exposure
+  async transferExposure(userId: string, amount: number, pin: string) {
+    return this.request(`/users/${userId}/transfer-exposure`, {
+      method: 'POST',
+      body: JSON.stringify({ amount, pin }),
+    });
+  }
+
+  // Game Categories
+  async getGameCategories() {
+    return this.request('/games/categories');
+  }
+
+  async createGameCategory(data: any) {
+    return this.request('/games/categories', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateGameCategory(categoryId: string, data: any) {
+    return this.request(`/games/categories/${categoryId}`, {
+      method: 'PATCH',
       body: JSON.stringify(data),
     });
   }

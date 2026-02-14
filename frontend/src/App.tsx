@@ -13,7 +13,7 @@ import GameDetail from "./pages/GameDetail";
 import Dashboard from "./pages/Dashboard";
 import Affiliate from "./pages/Affiliate";
 import Deposit from "./pages/Deposit";
-import MasterAdminPanel from "./pages/MasterAdminPanel";
+import AdminPage from "./pages/AdminPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,7 +39,11 @@ const App = () => (
             <Route path="/sports" element={<Games />} />
             <Route path="/live-casino" element={<Games />} />
             <Route path="/promotions" element={<Index />} />
-            <Route path="/master-admin" element={<MasterAdminPanel />} />
+            {/* Role-based Admin Dashboards */}
+            <Route path="/powerhouse" element={<AdminPage role="powerhouse" />} />
+            <Route path="/superadmin" element={<AdminPage role="super" />} />
+            <Route path="/master" element={<AdminPage role="master" />} />
+            <Route path="/user" element={<AdminPage role="player" />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
