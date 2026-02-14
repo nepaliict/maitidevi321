@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ScrollToTop } from "@/components/layout/ScrollToTop";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -20,36 +21,38 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <ScrollToTop />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/games" element={<Games />} />
-            <Route path="/games/:category" element={<Games />} />
-            <Route path="/game/:id" element={<GameDetail />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/affiliate" element={<Affiliate />} />
-            <Route path="/deposit" element={<Deposit />} />
-            <Route path="/sports" element={<Games />} />
-            <Route path="/live-casino" element={<Games />} />
-            <Route path="/promotions" element={<Index />} />
-            {/* Role-based Admin Dashboards */}
-            <Route path="/powerhouse" element={<AdminPage role="powerhouse" />} />
-            <Route path="/superadmin" element={<AdminPage role="super" />} />
-            <Route path="/master" element={<AdminPage role="master" />} />
-            <Route path="/user" element={<AdminPage role="player" />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
+    <ThemeProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <ScrollToTop />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/games" element={<Games />} />
+              <Route path="/games/:category" element={<Games />} />
+              <Route path="/game/:id" element={<GameDetail />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/affiliate" element={<Affiliate />} />
+              <Route path="/deposit" element={<Deposit />} />
+              <Route path="/sports" element={<Games />} />
+              <Route path="/live-casino" element={<Games />} />
+              <Route path="/promotions" element={<Index />} />
+              {/* Role-based Admin Dashboards */}
+              <Route path="/powerhouse" element={<AdminPage role="powerhouse" />} />
+              <Route path="/superadmin" element={<AdminPage role="super" />} />
+              <Route path="/master" element={<AdminPage role="master" />} />
+              <Route path="/user" element={<AdminPage role="player" />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

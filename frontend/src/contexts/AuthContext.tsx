@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import apiClient from '@/lib/api';
 
 interface User {
@@ -6,7 +6,7 @@ interface User {
   email: string;
   username: string;
   full_name?: string;
-  role: 'master_admin' | 'admin' | 'agent' | 'user';
+  role: string;
   is_active: boolean;
   kyc_status: string;
   wallet_balance?: number;
@@ -20,44 +20,33 @@ interface AuthContextType {
   register: (userData: any) => Promise<void>;
   refreshUser: () => Promise<void>;
   isAuthenticated: boolean;
-  isAdmin: boolean;
-  isMasterAdmin: boolean;
-  isAgent: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Initialize from localStorage immediately
-  const [user, setUser] = useState<User | null>(() => {
-    const stored = localStorage.getItem('user');
-    return stored ? JSON.parse(stored) : null;
-  });
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const refreshUser = async () => {
+  const refreshUser = useCallback(async () => {
     try {
       const token = apiClient.getToken();
       if (!token) {
         setUser(null);
-        localStorage.removeItem('user');
         return;
       }
-
+      // Always fetch user from server - never trust localStorage for role/permissions
       const userData = await apiClient.getMe();
       setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
     } catch (error) {
       console.error('Failed to refresh user:', error);
       setUser(null);
-      localStorage.removeItem('user');
       apiClient.setToken(null);
     }
-  };
+  }, []);
 
   useEffect(() => {
     const initAuth = async () => {
-      // If we have a token but no user, try to refresh
       const token = apiClient.getToken();
       if (token) {
         await refreshUser();
@@ -65,17 +54,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(false);
     };
     initAuth();
-  }, []);
+  }, [refreshUser]);
 
   const login = async (email: string, password: string, totpCode?: string) => {
-    try {
-      const response = await apiClient.login(email, password, totpCode);
-      setUser(response.user);
-      // Store user in localStorage for persistence
-      localStorage.setItem('user', JSON.stringify(response.user));
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.login(email, password, totpCode);
+    // Set user from server response only - no localStorage role storage
+    setUser(response.user);
   };
 
   const logout = async () => {
@@ -85,36 +69,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Logout error:', error);
     } finally {
       setUser(null);
-      localStorage.removeItem('user');
       apiClient.setToken(null);
     }
   };
 
   const register = async (userData: any) => {
-    const response = await apiClient.register(userData);
-    return response;
+    return await apiClient.register(userData);
   };
 
   const isAuthenticated = !!user;
-  const isMasterAdmin = user?.role === 'master_admin';
-  const isAdmin = user?.role === 'admin' || isMasterAdmin;
-  const isAgent = user?.role === 'agent' || isAdmin;
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        login,
-        logout,
-        register,
-        refreshUser,
-        isAuthenticated,
-        isAdmin,
-        isMasterAdmin,
-        isAgent,
-      }}
-    >
+    <AuthContext.Provider value={{ user, loading, login, logout, register, refreshUser, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );

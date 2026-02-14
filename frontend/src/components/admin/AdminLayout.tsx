@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/components/ThemeProvider';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -40,7 +41,7 @@ export default function AdminLayout({ role, children }: AdminLayoutProps) {
   const [activeModule, setActiveModule] = useState('dashboard');
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
+  const { theme, toggleTheme } = useTheme();
   const modules = getModulesForRole(role);
   const roleConfig = ROLE_CONFIG[role];
 
@@ -58,10 +59,10 @@ export default function AdminLayout({ role, children }: AdminLayoutProps) {
   const moduleGroups = [
     { label: 'Overview', ids: ['dashboard', 'messages'] },
     { label: 'User Management', ids: ['super-users', 'master-users', 'player-users'] },
-    { label: 'Finance', ids: ['kyc', 'deposits', 'withdrawals'] },
-    { label: 'Gaming', ids: ['game-categories', 'game-providers', 'games', 'bonus-rules'] },
-    { label: 'Reports', ids: ['game-logs', 'transactions', 'activity-logs'] },
-    { label: 'System', ids: ['super-settings'] },
+    { label: 'Finance', ids: ['kyc', 'deposits', 'withdrawals', 'settlement', 'exposure-transfer'] },
+    { label: 'Gaming', ids: ['game-categories', 'game-providers', 'games', 'game-wallet', 'bonus-rules', 'player-transfer'] },
+    { label: 'Reports', ids: ['game-logs', 'transaction-audit', 'transactions', 'activity-logs', 'analytics'] },
+    { label: 'System', ids: ['sessions', 'super-settings'] },
   ];
 
   const sidebarContent = (
@@ -159,13 +160,13 @@ export default function AdminLayout({ role, children }: AdminLayoutProps) {
       {/* Footer */}
       <div className="p-3 border-t border-border space-y-2">
         <button
-          onClick={() => setDarkMode(!darkMode)}
+          onClick={toggleTheme}
           className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors text-sm ${
             collapsed ? 'justify-center px-2' : ''
           }`}
         >
-          {darkMode ? <Moon className="w-4 h-4 shrink-0" /> : <Sun className="w-4 h-4 shrink-0" />}
-          {!collapsed && <span>{darkMode ? 'Dark Mode' : 'Light Mode'}</span>}
+          {theme === 'dark' ? <Moon className="w-4 h-4 shrink-0" /> : <Sun className="w-4 h-4 shrink-0" />}
+          {!collapsed && <span>{theme === 'dark' ? 'Dark Mode' : 'Light Mode'}</span>}
         </button>
 
         <Separator />
