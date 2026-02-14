@@ -8,6 +8,14 @@ import BonusRulesModule from '@/components/admin/modules/BonusRulesModule';
 import LogsModule from '@/components/admin/modules/LogsModule';
 import SuperSettingsModule from '@/components/admin/modules/SuperSettingsModule';
 import MessagesModule from '@/components/admin/modules/MessagesModule';
+import TransactionAuditModule from '@/components/admin/modules/TransactionAuditModule';
+import ActivityLogModule from '@/components/admin/modules/ActivityLogModule';
+import AnalyticsModule from '@/components/admin/modules/AnalyticsModule';
+import PlayerTransferModule from '@/components/admin/modules/PlayerTransferModule';
+import SessionManagementModule from '@/components/admin/modules/SessionManagementModule';
+import SettlementModule from '@/components/admin/modules/SettlementModule';
+import ExposureTransferModule from '@/components/admin/modules/ExposureTransferModule';
+import GameWalletModule from '@/components/admin/modules/GameWalletModule';
 import { type UserRole } from '@/config/adminRoles';
 
 interface AdminPageProps {
@@ -52,10 +60,24 @@ function ModuleRenderer({ role, activeModule, onNavigate }: { role: UserRole; ac
       return <BonusRulesModule />;
     case 'game-logs':
       return <LogsModule type="game-logs" />;
+    case 'transaction-audit':
+      return <TransactionAuditModule role={role} />;
     case 'transactions':
       return <LogsModule type="transactions" />;
     case 'activity-logs':
-      return <LogsModule type="activity-logs" />;
+      return <ActivityLogModule role={role} />;
+    case 'analytics':
+      return <AnalyticsModule role={role} />;
+    case 'player-transfer':
+      return <PlayerTransferModule />;
+    case 'sessions':
+      return <SessionManagementModule role={role} />;
+    case 'settlement':
+      return <SettlementModule role={role} />;
+    case 'exposure-transfer':
+      return <ExposureTransferModule />;
+    case 'game-wallet':
+      return <GameWalletModule />;
     case 'super-settings':
       return <SuperSettingsModule />;
     default:

@@ -98,7 +98,9 @@ const sidebarItems = [
 ];
 
 export default function MasterAdminPanel() {
-  const { user, logout, isMasterAdmin, isAdmin, loading: authLoading } = useAuth();
+  const { user, logout, loading: authLoading } = useAuth();
+  const isMasterAdmin = user?.role === 'master_admin' || user?.role === 'powerhouse';
+  const isAdmin = isMasterAdmin || user?.role === 'admin' || user?.role === 'super';
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('dashboard');
   const [loading, setLoading] = useState(true);

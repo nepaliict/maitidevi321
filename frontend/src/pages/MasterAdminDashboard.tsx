@@ -48,7 +48,8 @@ import {
 } from 'recharts';
 
 export default function MasterAdminDashboard() {
-  const { user, logout, isMasterAdmin } = useAuth();
+  const { user, logout } = useAuth();
+  const isMasterAdmin = user?.role === 'master_admin' || user?.role === 'powerhouse';
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [loading, setLoading] = useState(false);
